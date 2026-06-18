@@ -127,11 +127,12 @@ outputs:
         - jupytergis-core =${{ version }}
     tests:
       - python:
-          imports:
-            - jupytergis_qgis.qgis_loader
           pip_check: true
+      - script:
+          - python -c "import jupytergis_qgis.qgis_loader"
         requirements:
-          - qgis
+          run:
+            - qgis
 
   - package:
       name: jupytergis-lite
