@@ -1,36 +1,38 @@
-{% set name = "jupytergis-packages" %}
-{% set version = "0.15.0" %}
-{% set python_min = "3.10" %}
+schema_version: 1
 
-package:
-  name: {{ name|lower }}
-  version: {{ version }}
+context:
+  version: "0.15.0"
+  build_number: 0
+  python_min: "3.10"
+
+recipe:
+  name: jupytergis-packages
+  version: ${{ version }}
 
 source:
-  - url: https://pypi.org/packages/source/j/jupytergis_core/jupytergis_core-{{ version }}.tar.gz
+  - url: https://pypi.org/packages/source/j/jupytergis_core/jupytergis_core-${{ version }}.tar.gz
     sha256: 57fee2717ec3605a254b8e5902a679378aff4c6861ee109ec2c0e234d8267b22
-    folder: jupytergis_core
-  - url: https://pypi.org/packages/source/j/jupytergis_lab/jupytergis_lab-{{ version }}.tar.gz
+    target_directory: jupytergis_core
+  - url: https://pypi.org/packages/source/j/jupytergis_lab/jupytergis_lab-${{ version }}.tar.gz
     sha256: e8571f972d5280b5b776c46962a9504c387967324a484383dc4870efdc70aa3a
-    folder: jupytergis_lab
-  - url: https://pypi.org/packages/source/j/jupytergis_qgis/jupytergis_qgis-{{ version }}.tar.gz
+    target_directory: jupytergis_lab
+  - url: https://pypi.org/packages/source/j/jupytergis_qgis/jupytergis_qgis-${{ version }}.tar.gz
     sha256: e480d3178f503117b096d58f5549b8b17021231a12f90f19d48f2bad0e398311
-    folder: jupytergis_qgis
-  - url: https://pypi.org/packages/source/j/jupytergis_lite/jupytergis_lite-{{ version }}.tar.gz
+    target_directory: jupytergis_qgis
+  - url: https://pypi.org/packages/source/j/jupytergis_lite/jupytergis_lite-${{ version }}.tar.gz
     sha256: c0d74a248a8230d53fbe97d17606dccacb852e783a3c06c902ead50460f1e4b5
-    folder: jupytergis_lite
-  - url: https://pypi.org/packages/source/j/jupytergis/jupytergis-{{ version }}.tar.gz
+    target_directory: jupytergis_lite
+  - url: https://pypi.org/packages/source/j/jupytergis/jupytergis-${{ version }}.tar.gz
     sha256: c6d6a90b1b1d70b5364a3950205a2c75f6873982ceaa256ab1a1d47e24a497b8
-    folder: jupytergis
+    target_directory: jupytergis
 
 build:
   noarch: python
-  number: 0
-
+  number: ${{ build_number }}
 
 outputs:
-  - name: jupytergis-core
-    version: {{ version }}
+  - package:
+      name: jupytergis-core
     build:
       noarch: python
       script: |
@@ -39,29 +41,28 @@ outputs:
     requirements:
       host:
         - pip
-        - python {{ python_min }}
+        - python ${{ python_min }}
         - hatchling
         - yarn
         - jupyterlab >=4.5.1
         - hatch-jupyter-builder
         - hatch-nodejs-version >=0.3.2
       run:
-        - python >={{ python_min }}
+        - python >=${{ python_min }}
         - jupyter_ydoc >=2,<4
-      run_constrained:
+      run_constraints:
         - jupyterlab >=4.5.1
-    test:
-      # imports:
-      #   - jupytergis_core
-      commands:
-        - pip check
-        - test -f ${PREFIX}/share/jupyter/labextensions/@jupytergis/jupytergis-core/package.json                            # [unix]
-        - if not exist %PREFIX%\\share\\jupyter\\labextensions\\@jupytergis/jupytergis-core\\package.json (exit 1)          # [win]
-      requires:
-        - pip
+    tests:
+      - python:
+          imports:
+            - jupytergis_core
+          pip_check: true
+      - package_contents:
+          files:
+            - share/jupyter/labextensions/@jupytergis/jupytergis-core/package.json
 
-  - name: jupytergis-lab
-    version: {{ version }}
+  - package:
+      name: jupytergis-lab
     build:
       noarch: python
       script: |
@@ -70,14 +71,14 @@ outputs:
     requirements:
       host:
         - pip
-        - python {{ python_min }}
+        - python ${{ python_min }}
         - hatchling
         - yarn
         - jupyterlab >=4.5.1
         - hatch-jupyter-builder
         - hatch-nodejs-version >=0.3.2
       run:
-        - python >={{ python_min }}
+        - python >=${{ python_min }}
         - requests
         - jupyter_ydoc >=2,<4
         - ypywidgets >=0.9.0,<0.10
@@ -86,20 +87,20 @@ outputs:
         - pydantic >=2,<3
         - jupytergis-core
         - sidecar >=0.7.0
-      run_constrained:
+      run_constraints:
         - jupyterlab >=4.5.1
-        - jupytergis-core ={{ version }}
-    test:
-      imports:
-        - jupytergis_lab.notebook.gis_document
-      commands:
-        - test -f ${PREFIX}/share/jupyter/labextensions/@jupytergis/jupytergis-lab/package.json                            # [unix]
-        - if not exist %PREFIX%\\share\\jupyter\\labextensions\\@jupytergis/jupytergis-lab\\package.json (exit 1)          # [win]
-      requires:
-        - pip
+        - jupytergis-core =${{ version }}
+    tests:
+      - python:
+          imports:
+            - jupytergis_lab.notebook.gis_document
+          pip_check: true
+      - package_contents:
+          files:
+            - share/jupyter/labextensions/@jupytergis/jupytergis-lab/package.json
 
-  - name: jupytergis-qgis
-    version: {{ version }}
+  - package:
+      name: jupytergis-qgis
     build:
       noarch: python
       script: |
@@ -108,31 +109,32 @@ outputs:
     requirements:
       host:
         - pip
-        - python {{ python_min }}
+        - python ${{ python_min }}
         - hatchling
         - yarn
         - jupyterlab >=4.5.1
         - hatch-jupyter-builder
         - hatch-nodejs-version >=0.3.2
       run:
-        - python >={{ python_min }}
+        - python >=${{ python_min }}
         - jupyter_server >=2.0.1,<3
         - jupyter_ydoc >=2,<4
         - jupytergis-core
         - jupytergis-lab
-      run_constrained:
+      run_constraints:
         - jupyterlab >=4.5.1
-        - jupytergis-lab ={{ version }}
-        - jupytergis-core ={{ version }}
-    test:
-      imports:
-        - jupytergis_qgis.qgis_loader
-      requires:
-        - pip
-        - qgis
+        - jupytergis-lab =${{ version }}
+        - jupytergis-core =${{ version }}
+    tests:
+      - python:
+          imports:
+            - jupytergis_qgis.qgis_loader
+          pip_check: true
+        requirements:
+          - qgis
 
-  - name: jupytergis-lite
-    version: {{ version }}
+  - package:
+      name: jupytergis-lite
     build:
       noarch: python
       script: |
@@ -141,25 +143,25 @@ outputs:
     requirements:
       host:
         - pip
-        - python {{ python_min }}
+        - python ${{ python_min }}
         - hatchling
       run:
-        - python >={{ python_min }}
+        - python >=${{ python_min }}
         - jupytergis-core
         - jupytergis-lab
-        - my-jupyter-shared-drive>=0.2.2
-      run_constrained:
-        - jupytergis-core ={{ version }}
-        - jupytergis-lab ={{ version }}
-    test:
-      imports:
-        - jupytergis
-      requires:
-        - pip
-        - python {{ python_min }}
+        - my-jupyter-shared-drive >=0.2.2
+      run_constraints:
+        - jupytergis-core =${{ version }}
+        - jupytergis-lab =${{ version }}
+    tests:
+      - python:
+          imports:
+            - jupytergis
+          pip_check: true
+          python_version: ${{ python_min }}.*
 
-  - name: jupytergis
-    version: {{ version }}
+  - package:
+      name: jupytergis
     build:
       noarch: python
       script: |
@@ -168,10 +170,10 @@ outputs:
     requirements:
       host:
         - pip
-        - python {{ python_min }}
+        - python ${{ python_min }}
         - hatchling
       run:
-        - python >={{ python_min }}
+        - python >=${{ python_min }}
         - jupytergis-core
         - jupytergis-lab
         - jupytergis-qgis
@@ -179,29 +181,28 @@ outputs:
         - jupyter-collaboration-ui >=2,<3
         - jupyter-docprovider >=2,<3
         - jupyter_server_ydoc >=2,<3
-      run_constrained:
+      run_constraints:
         - jupyterlab >=4.5.1
-        - jupytergis-core ={{ version }}
-        - jupytergis-lab ={{ version }}
-        - jupytergis-qgis ={{ version }}
-    test:
-      imports:
-        - jupytergis
-      requires:
-        - pip
-        - python {{ python_min }}
+        - jupytergis-core =${{ version }}
+        - jupytergis-lab =${{ version }}
+        - jupytergis-qgis =${{ version }}
+    tests:
+      - python:
+          imports:
+            - jupytergis
+          pip_check: true
+          python_version: ${{ python_min }}.*
 
 about:
-  home: https://github.com/geojupyter/jupytergis
   summary: A JupyterLab extension for collaborative GIS
   description: |
     jupytergis is a JupyterLab extension for GIS with collaborative editing support. It is designed to allow multiple people to work on the same file at the same time, and to facilitate discussion and collaboration around the GIS visualization being created.
     jupytergis has support for QGIS files, which makes it easy to import and export models from QGIS. It also has a range of features for creating and manipulating layers.
   license: BSD-3-Clause
-  license_family: BSD
   license_file: jupytergis/LICENSE
-  doc_url: https://jupytergis.readthedocs.io/en/latest
-  dev_url: https://github.com/geojupyter/jupytergis
+  homepage: https://github.com/geojupyter/jupytergis
+  documentation: https://jupytergis.readthedocs.io/en/latest
+  repository: https://github.com/geojupyter/jupytergis
 
 extra:
   recipe-maintainers:
