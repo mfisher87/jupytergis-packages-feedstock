@@ -54,6 +54,7 @@ outputs:
         - jupyterlab >=4.5.1
     tests:
       - python:
+          python_version: ${{ python_min }}.*
           imports:
             - jupytergis_core
           pip_check: true
@@ -92,6 +93,7 @@ outputs:
         - jupytergis-core =${{ version }}
     tests:
       - python:
+          python_version: ${{ python_min }}.*
           imports:
             - jupytergis_lab.notebook.gis_document
           pip_check: true
@@ -127,6 +129,7 @@ outputs:
         - jupytergis-core =${{ version }}
     tests:
       - python:
+          python_version: ${{ python_min }}.*
           pip_check: true
       - script:
           - python -c "import jupytergis_qgis.qgis_loader"
@@ -156,10 +159,10 @@ outputs:
         - jupytergis-lab =${{ version }}
     tests:
       - python:
+          python_version: ${{ python_min }}.*
           imports:
             - jupytergis
           pip_check: true
-          python_version: ${{ python_min }}.*
 
   - package:
       name: jupytergis
@@ -189,10 +192,10 @@ outputs:
         - jupytergis-qgis =${{ version }}
     tests:
       - python:
+          python_version: ${{ python_min }}.*
           imports:
             - jupytergis
           pip_check: true
-          python_version: ${{ python_min }}.*
 
 about:
   summary: A JupyterLab extension for collaborative GIS
