@@ -83,11 +83,12 @@ outputs:
         - requests
         - jupyter_ydoc >=2,<4
         - ypywidgets >=0.9.0,<0.10
-        - yjs-widgets >=0.4,<0.5
+        - yjs-widgets >=0.5,<0.7
         - comm >=0.1.2,<0.2
         - pydantic >=2,<3
         - jupytergis-core
         - sidecar >=0.7.0
+        - py2vega >=0.7.0
       run_constraints:
         - jupyterlab >=4.5.1
         - jupytergis-core =${{ version }}
